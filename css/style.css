@@ -677,28 +677,41 @@ button, input, select, textarea {
   color: var(--text-muted);
 }
 
-/* Professional Navigation Links with Sliding Underline */
+/* Professional Navigation Links with Sliding Underline - Always 1 Line */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  flex-shrink: 1;
+}
+
 .nav-menu {
   display: flex;
   align-items: center;
   list-style: none;
-  gap: 4px;
+  gap: 2px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-item {
   position: relative;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
+  gap: 5px;
+  padding: 8px 11px;
   font-family: var(--font-heading);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: #cbd5e1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
   transition: all var(--transition-fast);
   position: relative;
 }
@@ -706,9 +719,9 @@ button, input, select, textarea {
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: 4px;
-  left: 14px;
-  right: 14px;
+  bottom: 2px;
+  left: 11px;
+  right: 11px;
   height: 2px;
   background: var(--accent-orange);
   transform: scaleX(0);
@@ -726,7 +739,7 @@ button, input, select, textarea {
 }
 
 .nav-link i.fa-angle-down {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: #64748b;
   transition: transform var(--transition-fast), color var(--transition-fast);
 }
@@ -3115,6 +3128,12 @@ button, input, select, textarea {
    RESPONSIVE BREAKPOINTS
    ========================================================================== */
 @media (max-width: 1199px) {
+  .nav-link { padding: 8px 8px; font-size: 0.82rem; gap: 4px; }
+  .header-phone { padding: 6px 12px; font-size: 0.80rem; }
+  .header-actions { gap: 8px; }
+  .header-actions .btn-sm { padding: 8px 14px; font-size: 0.80rem; }
+  .brand-logo { font-size: 1.3rem; gap: 10px; }
+  .logo-symbol { width: 34px; height: 34px; font-size: 1rem; }
   .hero-title { font-size: 3.2rem; }
   .designs-grid { grid-template-columns: repeat(2, 1fr); }
   .filter-grid { grid-template-columns: repeat(2, 1fr); }
