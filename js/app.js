@@ -5,6 +5,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initSmoothScrollEngine();
   initFluidCanvas();
   initLiquidCursorAndSpotlight();
   initWaterRippleEffect();
@@ -25,30 +26,55 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
+   ULTRA-SMOOTH MOMENTUM LIQUID SCROLL ENGINE
+   ========================================================================== */
+function initSmoothScrollEngine() {
+  if (typeof Lenis !== 'undefined') {
+    const lenis = new Lenis({
+      duration: 0.85,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.2,
+      smoothTouch: false,
+      syncTouch: false,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    window.lenisInstance = lenis;
+
+    lenis.on('scroll', (e) => {
+      const header = document.querySelector('.site-header');
+      if (header) {
+        if (e.scroll > 40) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      }
+    });
+  }
+}
+
+/* ==========================================================================
    SCROLL REVEAL & CARD MICRO-ANIMATIONS
    ========================================================================== */
 function initScrollAnimations() {
   const revealElements = document.querySelectorAll('.reveal-fade-up, .reveal-fade-in, .design-card, .why-card, .suburb-card, .testimonial-card');
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-      }
-    });
-  }, {
-    threshold: 0.1,
-    rootMargin: '0px 0px -40px 0px'
-  });
-
-  revealElements.forEach((el, idx) => {
-    if (!el.classList.contains('reveal-fade-up') && !el.classList.contains('reveal-fade-in')) {
-      el.classList.add('reveal-fade-up');
-      el.style.transitionDelay = `${(idx % 3) * 0.1}s`;
-    }
-    observer.observe(el);
+  revealElements.forEach(el => {
+    el.classList.add('is-visible');
   });
 }
+
+window.refreshScrollAnimations = function() {
+  initScrollAnimations();
+};
 
 /* ==========================================================================
    1. NAVBAR & MOBILE DRAWER CONTROLLER
@@ -59,14 +85,21 @@ function initNavbar() {
   const mobileDrawer = document.querySelector('.mobile-drawer');
   const drawerClose = document.querySelector('.drawer-close-btn');
 
-  // Sticky Scroll Shadow
+  // Sticky Scroll Shadow (Throttled with rAF)
+  let headerTicking = false;
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 40) {
-      header?.classList.add('scrolled');
-    } else {
-      header?.classList.remove('scrolled');
+    if (!headerTicking) {
+      requestAnimationFrame(() => {
+        if (window.scrollY > 40) {
+          header?.classList.add('scrolled');
+        } else {
+          header?.classList.remove('scrolled');
+        }
+        headerTicking = false;
+      });
+      headerTicking = true;
     }
-  });
+  }, { passive: true });
 
   // Mobile Drawer Toggle
   if (mobileToggle && mobileDrawer) {
@@ -83,11 +116,31 @@ function initNavbar() {
     });
   }
 
-  // Close drawer on link click
-  document.querySelectorAll('.mobile-nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileDrawer?.classList.remove('open');
-      document.body.style.overflow = '';
+  // Smooth scroll for all hash links with sticky header offset
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const href = this.getAttribute('href');
+      if (href && href !== '#' && href.startsWith('#')) {
+        const targetEl = document.querySelector(href);
+        if (targetEl) {
+          e.preventDefault();
+          if (mobileDrawer?.classList.contains('open')) {
+            mobileDrawer.classList.remove('open');
+            document.body.style.overflow = '';
+          }
+          const headerOffset = 80;
+          if (window.lenisInstance) {
+            window.lenisInstance.scrollTo(targetEl, { offset: -headerOffset, duration: 1.0 });
+          } else {
+            const elementPosition = targetEl.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }
+      }
     });
   });
 }
@@ -1118,6 +1171,17 @@ function initFaqAccordion() {
    14. MODAL CONTROLS & LEAD CAPTURE TOAST
    ========================================================================== */
 function initModals() {
+  // ESC key closes all modals & drawers, restoring overflow
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-backdrop, .custom-modal, .mobile-drawer').forEach(m => {
+        m.classList.remove('open', 'active');
+        m.style.display = '';
+      });
+      document.body.style.overflow = '';
+    }
+  });
+
   // Close buttons & backdrop clicks
   document.querySelectorAll('.modal-close-btn, .modal-close, .modal-backdrop').forEach(el => {
     el.addEventListener('click', (e) => {
@@ -1242,6 +1306,17 @@ window.showToast = function(message) {
   }, 4000);
 };
 
+let isWindowScrolling = false;
+let windowScrollTimeout;
+function setScrollingState() {
+  isWindowScrolling = true;
+  clearTimeout(windowScrollTimeout);
+  windowScrollTimeout = setTimeout(() => { isWindowScrolling = false; }, 90);
+}
+window.addEventListener('scroll', setScrollingState, { passive: true });
+window.addEventListener('wheel', setScrollingState, { passive: true });
+window.addEventListener('touchmove', setScrollingState, { passive: true });
+
 /* ==========================================================================
    FLUID WATER CANVAS SIMULATION ENGINE
    Multi-harmonic translucent sine water waves with reactive ripple propagation
@@ -1249,38 +1324,45 @@ window.showToast = function(message) {
 function initFluidCanvas() {
   const canvas = document.getElementById('fluidCanvas');
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { alpha: true });
   if (!ctx) return;
 
-  let width, height;
+  let width = 0, height = 0;
   let ripples = [];
   let mouse = { x: -1000, y: -1000, vx: 0, vy: 0, px: 0, py: 0 };
   let time = 0;
-  let isRunning = true;
+  let isRendering = false;
+  let isDocumentVisible = !document.hidden;
 
   function resize() {
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
   }
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', resize, { passive: true });
   resize();
 
-  // Mouse movement ripple generation
+  let mouseTicking = false;
   window.addEventListener('mousemove', (e) => {
-    mouse.vx = e.clientX - mouse.px;
-    mouse.vy = e.clientY - mouse.py;
-    mouse.px = mouse.x = e.clientX;
-    mouse.py = mouse.y = e.clientY;
+    if (!mouseTicking) {
+      requestAnimationFrame(() => {
+        mouse.vx = e.clientX - mouse.px;
+        mouse.vy = e.clientY - mouse.py;
+        mouse.px = mouse.x = e.clientX;
+        mouse.py = mouse.y = e.clientY;
 
-    const speed = Math.hypot(mouse.vx, mouse.vy);
-    if (speed > 28 && Math.random() < 0.22) {
-      addRipple(mouse.x, mouse.y, Math.min(speed * 0.4, 25), 0.25);
+        const speed = Math.hypot(mouse.vx, mouse.vy);
+        if (speed > 28 && Math.random() < 0.22) {
+          addRipple(mouse.x, mouse.y, Math.min(speed * 0.4, 25), 0.25);
+        }
+        mouseTicking = false;
+      });
+      mouseTicking = true;
     }
-  });
+  }, { passive: true });
 
   window.addEventListener('click', (e) => {
     addRipple(e.clientX, e.clientY, 42, 0.65);
-  });
+  }, { passive: true });
 
   window.addEventListener('touchstart', (e) => {
     if (e.touches && e.touches[0]) {
@@ -1289,7 +1371,7 @@ function initFluidCanvas() {
   }, { passive: true });
 
   function addRipple(x, y, maxRadius, strength) {
-    if (ripples.length > 20) ripples.shift();
+    if (ripples.length > 15) ripples.shift();
     ripples.push({
       x,
       y,
@@ -1298,14 +1380,9 @@ function initFluidCanvas() {
       opacity: strength || 0.5,
       speed: 2 + Math.random() * 1.5
     });
+    checkStartLoop();
   }
 
-  document.addEventListener('visibilitychange', () => {
-    isRunning = !document.hidden;
-    if (isRunning) requestAnimationFrame(render);
-  });
-
-  // Layered sine wave currents
   const waves = [
     { wavelength: 0.0025, amplitude: 35, speed: 0.0007, color: 'rgba(255, 107, 0, 0.035)', offset: 0.35 },
     { wavelength: 0.0018, amplitude: 45, speed: 0.0005, color: 'rgba(255, 133, 27, 0.025)', offset: 0.6 },
@@ -1313,18 +1390,21 @@ function initFluidCanvas() {
   ];
 
   function render() {
-    if (!isRunning) return;
+    if (!isDocumentVisible || window.scrollY > height + 250) {
+      isRendering = false;
+      return;
+    }
+
     time += 1;
     ctx.clearRect(0, 0, width, height);
 
-    // 1. Draw flowing liquid currents
     waves.forEach(wave => {
       ctx.beginPath();
       const baseY = height * wave.offset;
       ctx.moveTo(0, height);
       ctx.lineTo(0, baseY);
 
-      for (let x = 0; x <= width; x += 14) {
+      for (let x = 0; x <= width + 40; x += 40) {
         const yOffset =
           Math.sin(x * wave.wavelength + time * wave.speed) * wave.amplitude +
           Math.cos(x * wave.wavelength * 0.6 - time * wave.speed * 1.1) * (wave.amplitude * 0.45);
@@ -1337,7 +1417,6 @@ function initFluidCanvas() {
       ctx.fill();
     });
 
-    // 2. Render expanding water ripples
     for (let i = ripples.length - 1; i >= 0; i--) {
       const r = ripples[i];
       r.radius += r.speed;
@@ -1353,18 +1432,28 @@ function initFluidCanvas() {
       ctx.strokeStyle = `rgba(255, 107, 0, ${r.opacity * 0.45})`;
       ctx.lineWidth = 1.5;
       ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(r.x, r.y, Math.max(0, r.radius - 10), 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(255, 255, 255, ${r.opacity * 0.28})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
     }
 
     requestAnimationFrame(render);
   }
 
-  render();
+  function checkStartLoop() {
+    if (!isRendering && isDocumentVisible && window.scrollY <= height + 250) {
+      isRendering = true;
+      requestAnimationFrame(render);
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    isDocumentVisible = !document.hidden;
+    if (isDocumentVisible) checkStartLoop();
+  });
+
+  window.addEventListener('scroll', () => {
+    checkStartLoop();
+  }, { passive: true });
+
+  checkStartLoop();
 }
 
 /* ==========================================================================
@@ -1373,9 +1462,20 @@ function initFluidCanvas() {
 function initLiquidCursorAndSpotlight() {
   const cursorGlow = document.getElementById('liquidCursorGlow');
   if (cursorGlow) {
+    let mouseX = 0, mouseY = 0, ticking = false;
+    cursorGlow.style.willChange = 'transform';
+
     window.addEventListener('mousemove', (e) => {
-      cursorGlow.style.opacity = '1';
-      cursorGlow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          cursorGlow.style.opacity = '1';
+          cursorGlow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+          ticking = false;
+        });
+        ticking = true;
+      }
     }, { passive: true });
 
     window.addEventListener('mouseleave', () => {
@@ -1393,34 +1493,72 @@ function attachCard3DTiltAndSpotlight() {
     if (card._hasTilt) return;
     card._hasTilt = true;
 
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
+    let rafId = null;
+    let cachedRect = null;
 
-      // Subtle 3D perspective tilt (-4 to +4 deg)
-      const rotateX = ((y - centerY) / centerY) * -4;
-      const rotateY = ((x - centerX) / centerX) * 4;
-
-      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-4px)`;
-      card.style.setProperty('--mouse-x', `${((x / rect.width) * 100).toFixed(1)}%`);
-      card.style.setProperty('--mouse-y', `${((y / rect.height) * 100).toFixed(1)}%`);
-    });
-
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-      card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)';
-    });
+    function updateRect() {
+      cachedRect = card.getBoundingClientRect();
+    }
 
     card.addEventListener('mouseenter', () => {
-      card.style.transition = 'transform 0.1s ease-out';
-    });
+      updateRect();
+      card.style.willChange = 'transform';
+      card.style.transition = 'transform 0.15s ease-out';
+    }, { passive: true });
+
+    card.addEventListener('mousemove', (e) => {
+      if (isWindowScrolling || e.buttons !== 0 || (window.getSelection && window.getSelection().toString().length > 0)) {
+        if (card.style.transform) card.style.transform = '';
+        return;
+      }
+
+      const clientX = e.clientX;
+      const clientY = e.clientY;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          rafId = null;
+          if (!cachedRect || cachedRect.width === 0 || cachedRect.height === 0) {
+            updateRect();
+          }
+          if (!cachedRect) return;
+
+          const x = clientX - cachedRect.left;
+          const y = clientY - cachedRect.top;
+
+          if (x < 0 || x > cachedRect.width || y < 0 || y > cachedRect.height) {
+            card.style.transform = '';
+            return;
+          }
+
+          const centerX = cachedRect.width / 2;
+          const centerY = cachedRect.height / 2;
+
+          const rotateX = ((y - centerY) / centerY) * -5.5;
+          const rotateY = ((x - centerX) / centerX) * 5.5;
+
+          card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translate3d(0, -6px, 0)`;
+          card.style.setProperty('--mouse-x', `${((x / cachedRect.width) * 100).toFixed(1)}%`);
+          card.style.setProperty('--mouse-y', `${((y / cachedRect.height) * 100).toFixed(1)}%`);
+        });
+      }
+    }, { passive: true });
+
+    card.addEventListener('mouseleave', () => {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      card.style.transform = '';
+      card.style.willChange = '';
+      card.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+      cachedRect = null;
+    }, { passive: true });
   });
 }
 
 function attachCardSpotlights() {
+  if (window.refreshScrollAnimations) window.refreshScrollAnimations();
   return attachCard3DTiltAndSpotlight();
 }
 window.attachCard3DTiltAndSpotlight = attachCard3DTiltAndSpotlight;
@@ -1862,22 +2000,42 @@ function setupSubnavScrollspy() {
   if (!subnav) return;
 
   const links = subnav.querySelectorAll('.subnav-link');
-  const sections = Array.from(links).map(link => {
-    const id = link.getAttribute('href').replace('#', '');
-    return document.getElementById(id);
-  }).filter(Boolean);
+  let sectionData = [];
 
+  function updateOffsets() {
+    sectionData = Array.from(links).map(link => {
+      const id = link.getAttribute('href')?.replace('#', '');
+      const el = id ? document.getElementById(id) : null;
+      if (!el) return null;
+      return {
+        link,
+        top: el.offsetTop,
+        height: el.offsetHeight
+      };
+    }).filter(Boolean);
+  }
+
+  updateOffsets();
+  window.addEventListener('resize', updateOffsets, { passive: true });
+
+  let ticking = false;
   window.addEventListener('scroll', () => {
-    const scrollPos = window.scrollY + 140;
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollPos = window.scrollY + 140;
+        let activeFound = false;
 
-    sections.forEach((section, idx) => {
-      const top = section.offsetTop;
-      const height = section.offsetHeight;
-      if (scrollPos >= top && scrollPos < top + height) {
-        links.forEach(l => l.classList.remove('active'));
-        if (links[idx]) links[idx].classList.add('active');
-      }
-    });
+        sectionData.forEach(item => {
+          if (!activeFound && scrollPos >= item.top && scrollPos < item.top + item.height) {
+            links.forEach(l => l.classList.remove('active'));
+            item.link.classList.add('active');
+            activeFound = true;
+          }
+        });
+        ticking = false;
+      });
+      ticking = true;
+    }
   }, { passive: true });
 }
 
