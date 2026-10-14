@@ -10,41 +10,71 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Immediate Theme Initialization (Zero-FOUC) -->
+  <meta name="color-scheme" content="dark light">
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('orange_theme');
+        if (savedTheme === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
-<body class="luxury-dark-theme">
+<body>
 
-  <!-- Interactive Fluid Water Canvas -->
+  <!-- Fluid Water Background & Ambient Orbs -->
   <canvas id="fluidCanvas" class="fluid-canvas"></canvas>
+  <div class="fluid-ambient-orb fluid-orb-1"></div>
+  <div class="fluid-ambient-orb fluid-orb-2"></div>
+  <div class="fluid-ambient-orb fluid-orb-3"></div>
   <!-- Ambient Glow -->
-  <div id="liquidCursorGlow" class="liquid-cursor-glow"></div>
+  <div class="liquid-cursor-glow" id="liquidCursorGlow"></div>
 
-  <!-- Top Notification Bar -->
-  <div class="top-bar">
-    <div class="container top-bar-content">
+  <!-- ==========================================================================
+       TOP NOTIFICATION BAR
+       ========================================================================== -->
+  <div class="top-notification-bar">
+    <div class="container top-bar-inner">
       <div class="top-bar-left">
-        <span><i class="fa-solid fa-gem text-orange"></i> 100% Fixed-Price Luxury Builders Sydney</span>
-        <span class="top-bar-divider">|</span>
-        <span><i class="fa-solid fa-certificate text-orange"></i> NSW Builders Lic: 389421C</span>
+        <div class="top-bar-item">
+          <i class="fa-solid fa-certificate"></i>
+          <span>NSW Builders Lic: <strong>389421C</strong> (20+ Years Quality Excellence)</span>
+        </div>
+        <div class="top-bar-item hide-mobile">
+          <i class="fa-solid fa-location-dot"></i>
+          <span>Bella Vista, NSW | Cheltenham, VIC</span>
+        </div>
       </div>
       <div class="top-bar-right">
-        <a href="tel:+61488582007"><i class="fa-solid fa-phone"></i> +61 488 582 007</a>
-        <a href="mailto:admin@orangesolutions.com.au"><i class="fa-solid fa-envelope"></i> admin@orangesolutions.com.au</a>
-        <button class="top-bar-btn" onclick="openContactModal('Consultation Request')">
-          <i class="fa-solid fa-calendar-check"></i> Book Consultation
-        </button>
+        <div class="top-bar-item">
+          <i class="fa-regular fa-clock"></i>
+          <span>Mon - Sat: 8:30 AM - 5:30 PM</span>
+        </div>
+        <div class="top-bar-social">
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Main Navigation Header -->
-  <header class="site-header sticky-header">
-    <div class="container header-content">
+  <!-- ==========================================================================
+       STICKY LUXURY NAVBAR
+       ========================================================================== -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-container">
       
       <!-- Brand Logo -->
       <a href="index.html" class="brand-logo">
-        <div class="logo-symbol">
-          <i class="fa-solid fa-house-chimney"></i>
-        </div>
+        <div class="logo-symbol"><i class="fa-solid fa-house-chimney"></i></div>
         <div class="logo-text">
           ORANGE<span>HOMES</span>
           <span class="logo-tag">Luxury Custom Builders</span>
@@ -64,6 +94,7 @@
               <li><a href="index.html#about-intro" class="dropdown-link"><i class="fa-solid fa-building-columns"></i> About Orange Homes</a></li>
               <li><a href="index.html#why-choose-us" class="dropdown-link"><i class="fa-solid fa-award"></i> Why Orange Homes?</a></li>
               <li><a href="index.html#testimonials" class="dropdown-link"><i class="fa-solid fa-star"></i> Verified Testimonials</a></li>
+              <li><a href="index.html#why-choose-us" class="dropdown-link"><i class="fa-solid fa-shield-halved"></i> 25-Yr Lifetime Warranty</a></li>
             </ul>
           </li>
 
@@ -72,10 +103,11 @@
               Home Designs <i class="fa-solid fa-angle-down"></i>
             </a>
             <ul class="nav-dropdown">
-              <li><a href="index.html#home-designs" class="dropdown-link"><i class="fa-solid fa-house"></i> Single Storey Homes</a></li>
-              <li><a href="index.html#home-designs" class="dropdown-link"><i class="fa-solid fa-house-laptop"></i> Double Storey Mansions</a></li>
-              <li><a href="index.html#home-designs" class="dropdown-link"><i class="fa-solid fa-people-roof"></i> Dual Occupancy & Duplex</a></li>
-              <li><a href="index.html#home-designs" class="dropdown-link"><i class="fa-solid fa-tree"></i> Acreage Country Estates</a></li>
+              <li><a href="design-detail.html?id=tryst" class="dropdown-link"><i class="fa-solid fa-star"></i> Tryst 60 SQ (Attached Granny)</a></li>
+              <li><a href="design-detail.html?id=bion" class="dropdown-link"><i class="fa-solid fa-people-roof"></i> Bion 58 SQ (Dual Living)</a></li>
+              <li><a href="design-detail.html?id=linea" class="dropdown-link"><i class="fa-solid fa-house"></i> Linea 48 SQ (Single Storey)</a></li>
+              <li><a href="design-detail.html?id=aurelia" class="dropdown-link"><i class="fa-solid fa-house-laptop"></i> Aurelia 42 SQ (Hamptons)</a></li>
+              <li><a href="index.html#home-designs" class="dropdown-link"><i class="fa-solid fa-layer-group"></i> View All Master Collection</a></li>
             </ul>
           </li>
 
@@ -102,7 +134,15 @@
 
       <!-- Action Button & Phone -->
       <div class="header-actions">
-        <a href="tel:+61488582007" class="header-phone">
+        <!-- Luxury Theme Switcher -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Toggle light/dark theme" title="Toggle Theme (Dark / Light)">
+          <span class="theme-toggle-track">
+            <span class="theme-toggle-icon icon-moon" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+            <span class="theme-toggle-icon icon-sun" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
+        <a href="tel:+61488582007" class="header-phone hide-mobile">
           <i class="fa-solid fa-phone-volume"></i>
           <span>+61 488 582 007</span>
         </a>
@@ -120,21 +160,25 @@
   <!-- ==========================================================================
        PAGE BANNER / HERO
        ========================================================================== -->
-  <section class="page-hero-banner" style="background: linear-gradient(rgba(8,8,11,0.85), rgba(8,8,11,0.95)), url('assets/images/hero_luxury_home.jpg') center/cover no-repeat; padding: 90px 0 60px; border-bottom: 1px solid var(--border-dark);">
-    <div class="container text-center reveal-fade-up">
-      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.05em;">
-        <a href="index.html" style="color: var(--text-muted); text-decoration: none;">Home</a> <i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; margin: 0 8px;"></i> <span class="text-orange">Sydney Coverage</span>
-      </div>
-      <h1 style="font-size: clamp(2.2rem, 4vw, 3.2rem); font-family: var(--font-heading); margin-bottom: 16px;">
-        Building Across Sydney's <span class="text-orange">Premier Corridors</span>
-      </h1>
-      <p style="max-width: 750px; margin: 0 auto 28px; font-size: 1.1rem; color: var(--text-light); line-height: 1.7;">
-        From the prestige estates of The Hills Shire to the rapid growth of the South West and Western Sydney Aerotropolis, Orange Homes builds architecturally bespoke luxury homes across all major NSW councils.
-      </p>
-      <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
-        <div class="badge-dark"><i class="fa-solid fa-circle-check text-orange"></i> 100% Fixed Site Costs in All Suburbs</div>
-        <div class="badge-dark"><i class="fa-solid fa-bolt text-orange"></i> CDC & DA Fast-Track Approvals</div>
-        <div class="badge-dark"><i class="fa-solid fa-shield text-orange"></i> Sloping & BAL-40 Specialists</div>
+  <section class="page-hero-banner">
+    <div class="container">
+      <div class="hero-banner-inner">
+        <div class="hero-breadcrumbs">
+          <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+          <i class="fa-solid fa-chevron-right sep"></i>
+          <span class="current">Sydney Coverage</span>
+        </div>
+        <h1 class="hero-banner-title">
+          Building Across Sydney's <span class="text-orange">Premier Corridors</span>
+        </h1>
+        <p class="hero-subtitle">
+          From the prestige estates of The Hills Shire to the rapid growth of the South West and Western Sydney Aerotropolis, Orange Homes builds architecturally bespoke luxury homes across all major NSW councils.
+        </p>
+        <div class="hero-pill-row">
+          <div class="hero-pill"><i class="fa-solid fa-circle-check"></i> 100% Fixed Site Costs in All Suburbs</div>
+          <div class="hero-pill"><i class="fa-solid fa-bolt"></i> CDC & DA Fast-Track Approvals</div>
+          <div class="hero-pill"><i class="fa-solid fa-shield-halved"></i> Sloping & BAL-40 Specialists</div>
+        </div>
       </div>
     </div>
   </section>
@@ -142,32 +186,54 @@
   <!-- ==========================================================================
        COUNCIL & PLANNING APPROVALS ADVICE BAR
        ========================================================================== -->
-  <section class="section-padding bg-dark" style="padding: 50px 0;">
+  <section class="section-padding bg-dark" style="padding: 60px 0;">
     <div class="container">
+      <div class="section-header reveal-fade-up text-center" style="margin-bottom: 40px;">
+        <span class="section-tag badge-orange">Planning & Approvals Expertise</span>
+        <h2>NSW Planning & <span class="text-orange">Certifier Fast-Track</span></h2>
+        <p>In-house town planning, DA/CDC navigation, and engineering compliance across all Greater Sydney local councils.</p>
+      </div>
+
       <div class="why-grid">
         
         <div class="why-card">
-          <div class="why-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+          <div class="why-card-top">
+            <div class="why-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+            <span class="why-card-num">01</span>
+          </div>
           <h4>Fast CDC Approval (14 Days)</h4>
           <p>We design homes to comply with NSW Housing Code SEPP guidelines for rapid 14-day Complying Development Certificate private certifier signoff.</p>
+          <div class="why-perk"><i class="fa-solid fa-circle-check"></i> <span>14-Day Fast-Track Signoff</span></div>
         </div>
 
         <div class="why-card">
-          <div class="why-icon"><i class="fa-solid fa-landmark"></i></div>
+          <div class="why-card-top">
+            <div class="why-icon"><i class="fa-solid fa-landmark"></i></div>
+            <span class="why-card-num">02</span>
+          </div>
           <h4>Council DA Management</h4>
           <p>For complex heritage overlays, custom duplexes, or steep slope sites, our in-house town planning team manages the full DA submission with local councils.</p>
+          <div class="why-perk"><i class="fa-solid fa-circle-check"></i> <span>Full Council Liaison Included</span></div>
         </div>
 
         <div class="why-card">
-          <div class="why-icon"><i class="fa-solid fa-fire-extinguisher"></i></div>
+          <div class="why-card-top">
+            <div class="why-icon"><i class="fa-solid fa-fire-extinguisher"></i></div>
+            <span class="why-card-num">03</span>
+          </div>
           <h4>Bushfire BAL-40 Compliance</h4>
           <p>Expert engineering for Hawkesbury, Hills Shire, and Blue Mountains fringe properties requiring toughened glass, non-combustible fascia, and spark arrestors.</p>
+          <div class="why-perk"><i class="fa-solid fa-circle-check"></i> <span>Toughened Glass & Spark Arrestors</span></div>
         </div>
 
         <div class="why-card">
-          <div class="why-icon"><i class="fa-solid fa-plane-departure"></i></div>
+          <div class="why-card-top">
+            <div class="why-icon"><i class="fa-solid fa-plane-departure"></i></div>
+            <span class="why-card-num">04</span>
+          </div>
           <h4>Aerotropolis Acoustic Glazing</h4>
           <p>Specialized sound attenuation and RW-rated acoustic insulation packages tailored for Bradfield and Western Sydney airport growth zones.</p>
+          <div class="why-perk"><i class="fa-solid fa-circle-check"></i> <span>RW-Rated Soundproofing</span></div>
         </div>
 
       </div>
@@ -199,23 +265,25 @@
        ========================================================================== -->
   <section class="section-padding bg-dark" style="border-top: 1px solid var(--border-dark); border-bottom: 1px solid var(--border-dark);">
     <div class="container">
-      <div class="banner-grid" style="background: var(--bg-dark-card); border: 1px solid var(--border-dark); border-left: 4px solid var(--primary-orange); border-radius: var(--radius-lg); padding: 48px;">
-        <div>
-          <span class="badge-orange" style="margin-bottom: 8px;">Complimentary Land Feasibility</span>
-          <h3>Own Land in Sydney or Looking to Buy?</h3>
-          <p style="margin-bottom: 16px;">
-            Our registered engineers and architects will inspect your contour survey, 10.7 planning certificate, and easement maps to confirm site suitability with zero fee.
-          </p>
-          <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.92rem; color: var(--text-light);">
-            <li><i class="fa-solid fa-check text-orange"></i> Sloping block fall calculations & drop edge beams</li>
-            <li><i class="fa-solid fa-check text-orange"></i> Sewer main & stormwater drainage verification</li>
-            <li><i class="fa-solid fa-check text-orange"></i> Maximum building envelope & solar orientation report</li>
-          </ul>
-        </div>
-        <div>
-          <button class="btn btn-primary btn-lg" onclick="openContactModal('Free Site & Land Feasibility Check')">
-            <i class="fa-solid fa-map-location-dot"></i> Request Free Site Feasibility
-          </button>
+      <div class="feasibility-card">
+        <div class="banner-grid">
+          <div>
+            <span class="badge-orange" style="margin-bottom: 12px; display: inline-block;">Complimentary Land Feasibility</span>
+            <h3>Own Land in Sydney or Looking to Buy?</h3>
+            <p>
+              Our registered engineers and architects will inspect your contour survey, 10.7 planning certificate, and easement maps to confirm site suitability with zero fee.
+            </p>
+            <ul class="feasibility-list">
+              <li><i class="fa-solid fa-check text-orange"></i> Sloping block fall calculations & drop edge beams</li>
+              <li><i class="fa-solid fa-check text-orange"></i> Sewer main & stormwater drainage verification</li>
+              <li><i class="fa-solid fa-check text-orange"></i> Maximum building envelope & solar orientation report</li>
+            </ul>
+          </div>
+          <div>
+            <button class="btn btn-primary btn-lg" onclick="openContactModal('Free Site & Land Feasibility Check')">
+              <i class="fa-solid fa-map-location-dot"></i> Request Free Site Feasibility
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -327,6 +395,17 @@
     </ul>
 
     <div style="margin-top: auto;">
+      <!-- Mobile Theme Toggle -->
+      <div class="drawer-theme-row">
+        <span class="drawer-theme-label"><i class="fa-solid fa-circle-half-stroke"></i> Theme Mode</span>
+        <button class="theme-toggle-btn mobile-theme-btn" id="mobileThemeToggleBtn" type="button" aria-label="Toggle light/dark theme">
+          <span class="theme-toggle-track">
+            <span class="theme-toggle-icon icon-moon" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+            <span class="theme-toggle-icon icon-sun" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
+      </div>
       <a href="tel:+61488582007" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">
         <i class="fa-solid fa-phone"></i> +61 488 582 007
       </a>

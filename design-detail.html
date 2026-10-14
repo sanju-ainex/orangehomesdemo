@@ -20,6 +20,21 @@
   
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
+
+  <!-- Immediate Theme Initialization (Zero-FOUC) -->
+  <meta name="color-scheme" content="dark light">
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('orange_theme');
+        if (savedTheme === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body class="project-detail-page">
 
@@ -114,6 +129,7 @@
               Resources <i class="fa-solid fa-angle-down"></i>
             </a>
             <ul class="nav-dropdown">
+              <li><a href="index.html#estimator" class="dropdown-link"><i class="fa-solid fa-calculator"></i> Build Cost Estimator</a></li>
               <li><a href="index.html#free-design-studio" class="dropdown-link"><i class="fa-solid fa-compass-drafting"></i> Free Custom 3D Design</a></li>
               <li><a href="index.html#virtual-tour" class="dropdown-link"><i class="fa-solid fa-vr-cardboard"></i> 360° Display Home Tour</a></li>
               <li><a href="articles.html" class="dropdown-link"><i class="fa-solid fa-newspaper"></i> Latest Construction Guides</a></li>
@@ -129,6 +145,14 @@
 
       <!-- Action Button & Phone -->
       <div class="header-actions">
+        <!-- Luxury Theme Switcher -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" type="button" aria-label="Toggle light/dark theme" title="Toggle Theme (Dark / Light)">
+          <span class="theme-toggle-track">
+            <span class="theme-toggle-icon icon-moon" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+            <span class="theme-toggle-icon icon-sun" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
         <a href="tel:+61488582007" class="header-phone hide-mobile">
           <i class="fa-solid fa-phone-volume"></i>
           <span>+61 488 582 007</span>
@@ -167,14 +191,14 @@
             <span class="badge-dark" id="heroStoreyBadge"><i class="fa-solid fa-layer-group"></i> Double Storey</span>
             <span class="badge-dark"><i class="fa-solid fa-shield-halved"></i> 100% Fixed-Price Contract</span>
           </div>
-          <h1 class="project-title" id="heroTitle">Tryst <span class="text-white" id="heroSizeSQ" style="font-weight: 400; opacity: 0.85;">— 60 SQ</span></h1>
+          <h1 class="project-title" id="heroTitle">Tryst <span class="hero-sq-badge" id="heroSizeSQ">— 60 SQ</span></h1>
           <p class="project-tagline" id="heroTagline">Attached Granny & Double Storey Modern Luxury for Next-Level Multi-Generational Living.</p>
         </div>
 
         <div class="project-hero-right">
           <div class="project-price-card">
             <div class="price-lbl">Architectural Masterpiece</div>
-            <div class="price-val" id="heroPriceText" style="font-size: 1.5rem; font-weight: 700; color: #ffffff; margin: 6px 0;">Custom Architectural Proposal</div>
+            <div class="price-val" id="heroPriceText">Custom Architectural Proposal</div>
             <div class="price-sub">Includes 100% Fixed Site Costs & Custom 3D Plan Modifications</div>
             <div class="hero-actions-grid">
               <button class="btn btn-primary" onclick="openContactModal('Tender Request: ' + (window.currentDesign?.name || 'Tryst'))">
@@ -280,7 +304,7 @@
       <div class="overview-grid">
         <div class="overview-content">
           <div class="section-tag">Design Overview</div>
-          <h2 class="section-heading" style="margin-top: 10px; font-size: 2.2rem; color: #ffffff;">
+          <h2 class="section-heading" style="margin-top: 10px; font-size: 2.2rem; color: var(--text-white);">
             Crafted For Grand Living & Multi-Generational Freedom
           </h2>
           <div class="overview-text" id="overviewDescription">
@@ -300,7 +324,7 @@
         </div>
 
         <div class="overview-features-box">
-          <h3 class="features-box-title"><i class="fa-solid fa-gem" style="color: #cbd5e1;"></i> Signature Architectural Inclusions</h3>
+          <h3 class="features-box-title"><i class="fa-solid fa-gem text-orange"></i> Signature Architectural Inclusions</h3>
           <ul class="features-checklist" id="overviewFeaturesList">
             <!-- Populated dynamically -->
           </ul>
@@ -364,13 +388,13 @@
         
         <!-- Area Breakdown Summary Cards -->
         <div class="area-breakdown-panel">
-          <h3 class="panel-heading"><i class="fa-solid fa-chart-pie" style="color: #94a3b8;"></i> Built Area Breakdown</h3>
+          <h3 class="panel-heading"><i class="fa-solid fa-chart-pie text-orange"></i> Built Area Breakdown</h3>
           <div class="area-cards-list" id="areaBreakdownList">
             <!-- Populated dynamically -->
           </div>
 
           <div class="lot-fit-guide-card">
-            <div class="fit-icon"><i class="fa-solid fa-ruler-horizontal" style="color: #cbd5e1;"></i></div>
+            <div class="fit-icon"><i class="fa-solid fa-ruler-horizontal"></i></div>
             <div class="fit-content">
               <h5>Recommended Lot Size</h5>
               <p>Suitable for block widths from <strong>15.5m+</strong> with a minimum depth of <strong>32.0m</strong>. Zero-lot alignment and custom corner block adaptations available.</p>
@@ -381,7 +405,7 @@
         <!-- Room Dimensions Table -->
         <div class="room-dimensions-panel">
           <div class="panel-header-flex">
-            <h3 class="panel-heading"><i class="fa-solid fa-table-cells" style="color: #94a3b8;"></i> Room Dimensions</h3>
+            <h3 class="panel-heading"><i class="fa-solid fa-table-cells text-orange"></i> Room Dimensions</h3>
             <div class="table-search-box">
               <i class="fa-solid fa-magnifying-glass"></i>
               <input type="text" id="dimensionSearchInput" placeholder="Filter rooms (e.g. Master, Kitchen, Granny)...">
@@ -523,7 +547,7 @@
 
       <div class="inclusions-download-banner">
         <div class="banner-left">
-          <i class="fa-solid fa-file-pdf" style="font-size: 2.2rem; color: #cbd5e1;"></i>
+          <i class="fa-solid fa-file-pdf text-orange" style="font-size: 2.4rem;"></i>
           <div>
             <h4>Download Full 2026 Architectural Inclusions Catalog</h4>
             <p>Comprehensive 24-page specification brochure covering all finishes, appliances, warranties, and smart home packages.</p>
@@ -565,7 +589,7 @@
       <div class="consultation-banner-grid">
         <div class="consultation-info">
           <div class="section-tag">Direct Builder Access</div>
-          <h2 style="font-size: 2.2rem; margin-top: 10px; color: #ffffff;">
+          <h2 style="font-size: 2.2rem; margin-top: 10px; color: var(--text-white);">
             Ready to Build <span id="contactSectionDesignName">Tryst</span> On Your Land?
           </h2>
           <p style="color: var(--text-light); line-height: 1.8; margin-bottom: 24px;">
@@ -574,15 +598,15 @@
 
           <div class="consultation-perks">
             <div class="perk-item">
-              <i class="fa-solid fa-circle-check" style="color: #cbd5e1;"></i>
+              <i class="fa-solid fa-circle-check text-orange"></i>
               <span>Complimentary Site & Soil Assessment (Value $1,500)</span>
             </div>
             <div class="perk-item">
-              <i class="fa-solid fa-circle-check" style="color: #cbd5e1;"></i>
+              <i class="fa-solid fa-circle-check text-orange"></i>
               <span>Free 3D Custom Architectural Concept Modifications</span>
             </div>
             <div class="perk-item">
-              <i class="fa-solid fa-circle-check" style="color: #cbd5e1;"></i>
+              <i class="fa-solid fa-circle-check text-orange"></i>
               <span>24-Hour Fixed Price Tender Turnaround</span>
             </div>
           </div>
@@ -660,6 +684,17 @@
     </ul>
 
     <div style="margin-top: auto; padding-top: 20px;">
+      <!-- Mobile Theme Toggle -->
+      <div class="drawer-theme-row">
+        <span class="drawer-theme-label"><i class="fa-solid fa-circle-half-stroke"></i> Theme Mode</span>
+        <button class="theme-toggle-btn mobile-theme-btn" id="mobileThemeToggleBtn" type="button" aria-label="Toggle light/dark theme">
+          <span class="theme-toggle-track">
+            <span class="theme-toggle-icon icon-moon" aria-hidden="true"><i class="fa-solid fa-moon"></i></span>
+            <span class="theme-toggle-icon icon-sun" aria-hidden="true"><i class="fa-solid fa-sun"></i></span>
+            <span class="theme-toggle-thumb"></span>
+          </span>
+        </button>
+      </div>
       <a href="tel:+61488582007" class="btn btn-primary" style="width: 100%; margin-bottom: 12px;">
         <i class="fa-solid fa-phone"></i> +61 488 582 007
       </a>
